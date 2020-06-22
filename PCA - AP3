@@ -1,0 +1,123 @@
+import random
+import time
+
+
+palavras = ['Pandemia','Mascara','Distanciamento','Febre','Tosse','Quarentena']
+
+def main():
+    #Parte Principal do programa
+    #Definição de Valores
+
+    print('SPECTRA SOLUÇÕES')
+    print("Jogo da Forca - COVID-19")
+    nome = str(input("Digite seu nome: "))
+    print()
+
+    print(nome,',Nosso jogo é baseado na situação atual que o mundo inteiro está vivendo!')
+    print ("Vamos Começar o Jogo,")
+    jogar = str(input("Sim ou Não? ")).strip().upper()
+    if jogar in "SIM":
+        print()
+    print ("Pensando em uma Palavra...")
+    time.sleep(3)
+    if jogar in "NÃO":
+        print("Até a Próxima!")
+
+    letras_erradas = ''
+    letras_acertadas = ''
+    pal_secreta = pal_aleatoria().upper()
+    jogando = True
+    chances = 7
+
+    while jogando:
+        jogo(letras_erradas, letras_acertadas, pal_secreta)
+
+        palpite = recebePalpite(letras_erradas + letras_acertadas)
+
+        if palpite in pal_secreta:
+            letras_acertadas += palpite
+
+            print()
+            if VerificaSeGanhou(pal_secreta, letras_acertadas):
+                print(nome,"Parabéns! A palavra secreta é "+pal_secreta+'! Você está DESCONTAMINADO!')
+                jogando = False
+        else:
+            letras_erradas += palpite
+
+            if len(letras_erradas) == (chances) - 1:
+                jogo(letras_erradas, letras_acertadas, pal_secreta)
+
+                print()
+                print("Game Over! Cuidado, Você corre o risco de CONTAMINAÇÃO!")
+                print("Depois de " + str(len(letras_erradas)) + " Letras Erradas e " + str(len(letras_acertadas)), end = ' ')
+                print('palpites corretos, a palavra era '+pal_secreta+'.')
+
+                jogando = False
+
+        if not jogando:
+            if novo_jogo():
+                letras_erradas = ''
+                letras_acertadas = ''
+                jogando = True
+                pal_secreta = pal_aleatoria().upper()
+
+def pal_aleatoria():
+    #Retorna para a escolha de uma palavra aleatória
+    
+    global palavras
+    return random.choice(palavras)
+
+def espaços(palavra):
+    #Imprime a lista com espaço entre suas letras
+    
+    for letra in palavra:
+        print(letra, end = ' ')
+
+    print()
+
+def jogo(letras_erradas, letras_acertadas, pal_secreta):
+    #Letras certas, Letras erradas e a palavra secreta
+
+    print("Letras Erradas:", end = ' ')
+    espaços(letras_erradas)
+
+    vazio = '_'*len(pal_secreta)
+    for i in range(len(pal_secreta)):
+        if pal_secreta[i] in letras_acertadas:
+            vazio = vazio[:i] + pal_secreta[i] + vazio[i+1:]
+
+    espaços(vazio)
+
+def recebePalpite(palpitesFeitos):
+    #Não permitir repetição de letras, não permitir mais de uma letra por vez
+    #Não permitir um caractere que não seja uma letra
+    
+    while True:
+        palpite = input("Advinhe uma letra.\n").upper()
+
+        if len(palpite) != 1:
+            print("Coloque apenas uma letra!")
+        elif palpite in palpitesFeitos:
+            print("Essa letra já foi, escolha outra!")
+        elif not 'A' <= palpite <= 'Z':
+            print("Escolha apenas letras!")
+        else:
+            return palpite
+        
+def novo_jogo():
+    #Opção para o usuário decidir se continua jogando ou não
+    
+    return input("Quer Jogar Novamente? (Sim ou Não)\n").upper().startswith('S')
+
+def VerificaSeGanhou(pal_secreta, letras_acertadas):
+    #Verificação de Acertos
+    
+    ganhou = True
+    for letra in pal_secreta:
+        if letra not in letras_acertadas:
+            ganhou = False
+            break
+
+    return ganhou
+
+main()
